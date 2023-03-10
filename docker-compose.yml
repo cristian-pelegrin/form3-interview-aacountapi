@@ -48,3 +48,7 @@ services:
     entrypoint: /go/src/app/test.entrypoint.sh
     volumes:
       - .:/go/src/app
+    depends_on:
+      - account_api
+    environment:
+      - API_URL=http://account_api:8080/v1
