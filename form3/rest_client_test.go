@@ -23,11 +23,16 @@ func mockedResponse(statusCode int, body string, header http.Header) *http.Respo
 	if header == nil {
 		header = make(http.Header)
 	}
-	return &http.Response{
+
+	response := &http.Response{
 		StatusCode: statusCode,
-		Body:       io.NopCloser(bytes.NewBufferString(body)),
 		Header:     header,
 	}
+	if body != "" {
+		response.Body = io.NopCloser(bytes.NewBufferString(body))
+	}
+
+	return response
 }
 
 type testRequestExpected struct {

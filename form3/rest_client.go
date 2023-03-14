@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -52,7 +53,12 @@ func (c *RestClient) DeleteRequest(path string) (*RestClientRequest, error) {
 }
 
 func (c *RestClient) newRequest(method string, path string, body any) (*RestClientRequest, error) {
-	targetURL := c.baseURL.JoinPath(strings.TrimPrefix(path, "/"))
+	targetURL, err := url.Parse(
+		fmt.Sprintf("%s/%s", c.baseURL.String(), strings.TrimPrefix(path, "/")),
+	)
+	if err != nil {
+		return nil, err
+	}
 
 	var payload io.Reader
 	if body != nil {
@@ -80,9 +86,14 @@ func (c *RestClient) Do(ctx context.Context, req *http.Request, v any) (*RestCli
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	response := &RestClientResponse{resp}
+
+	if resp.Body == nil {
+		return response, nil
+	}
+
+	defer resp.Body.Close()
 
 	respData, err := io.ReadAll(resp.Body)
 	if err != nil {
