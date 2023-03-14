@@ -5,9 +5,21 @@ import (
 	"net/url"
 )
 
+type HttpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 type RestClient struct {
-	httpClient *http.Client
+	httpClient HttpClient
 	baseURL    *url.URL
+}
+
+type RestClientRequest struct {
+	*http.Request
+}
+
+type RestClientResponse struct {
+	*http.Response
 }
 
 type service struct {
