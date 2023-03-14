@@ -28,7 +28,9 @@ func mockedResponse(statusCode int, body string, header http.Header) *http.Respo
 		StatusCode: statusCode,
 		Header:     header,
 	}
-	if body != "" {
+	if body == "" {
+		response.Body = http.NoBody
+	} else {
 		response.Body = io.NopCloser(bytes.NewBufferString(body))
 	}
 
@@ -62,14 +64,14 @@ func testRequest(t *testing.T, r *http.Request, expected testRequestExpected) {
 }
 
 func TestRestClient_GET(t *testing.T) {
-	c, _ := NewRestClient(nil, newRestClientParams{baseUrl: baseFakeUrl})
+	c, _ := NewRestClient(nil, NewRestClientParams{BaseUrl: baseFakeUrl})
 	testPath := "/test-get-path"
 	req, _ := c.GetRequest(testPath)
 	testRequest(t, req.Request, testRequestExpected{method: "GET", path: testPath, body: ""})
 }
 
 func TestRestClient_POST(t *testing.T) {
-	c, _ := NewRestClient(nil, newRestClientParams{baseUrl: baseFakeUrl})
+	c, _ := NewRestClient(nil, NewRestClientParams{BaseUrl: baseFakeUrl})
 	testPath := "test-post-path"
 	testData := struct {
 		Id   string `json:"id"`
@@ -80,7 +82,7 @@ func TestRestClient_POST(t *testing.T) {
 }
 
 func TestRestClient_DELETE(t *testing.T) {
-	c, _ := NewRestClient(nil, newRestClientParams{baseUrl: baseFakeUrl})
+	c, _ := NewRestClient(nil, NewRestClientParams{BaseUrl: baseFakeUrl})
 	testPath := "/test-delete-path/123456789"
 	req, _ := c.DeleteRequest(testPath)
 	testRequest(t, req.Request, testRequestExpected{method: "DELETE", path: testPath, body: ""})
@@ -103,7 +105,7 @@ func TestRestClient_Do_successResponse(t *testing.T) {
 			nil,
 		), nil
 	})
-	client, err := NewRestClient(mockedHttpClient, newRestClientParams{baseUrl: baseFakeUrl})
+	client, err := NewRestClient(mockedHttpClient, NewRestClientParams{BaseUrl: baseFakeUrl})
 	if err != nil {
 		t.Fatalf("Error creting RestClient: %v", err)
 	}
@@ -140,7 +142,7 @@ func TestRestClient_Do_errorResponse(t *testing.T) {
 			nil,
 		), nil
 	})
-	client, err := NewRestClient(mockedHttpClient, newRestClientParams{baseUrl: baseFakeUrl})
+	client, err := NewRestClient(mockedHttpClient, NewRestClientParams{BaseUrl: baseFakeUrl})
 	if err != nil {
 		t.Fatalf("Error creting RestClient: %v", err)
 	}

@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-type newRestClientParams struct {
-	baseUrl string
+type NewRestClientParams struct {
+	BaseUrl string
 }
 
 type body struct {
@@ -21,12 +21,12 @@ type body struct {
 	ErrorMessage string `json:"error_message,omitempty"`
 }
 
-func NewRestClient(httpClient HttpClient, params newRestClientParams) (*RestClient, error) {
+func NewRestClient(httpClient HttpClient, params NewRestClientParams) (*RestClient, error) {
 	if httpClient == nil {
 		httpClient = &http.Client{}
 	}
 
-	baseUrl, err := url.ParseRequestURI(params.baseUrl)
+	baseUrl, err := url.ParseRequestURI(params.BaseUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -89,13 +89,17 @@ func (c *RestClient) Do(ctx context.Context, req *http.Request, v any) (*RestCli
 
 	response := &RestClientResponse{resp}
 
-	if resp.Body == nil {
+	/*if resp.Body == nil {
 		return response, nil
-	}
+	}*/
 
 	defer resp.Body.Close()
 
 	respData, err := io.ReadAll(resp.Body)
+	if len(respData) == 0 {
+		// means is a http.noBody response
+		return response, nil
+	}
 	if err != nil {
 		return response, err
 	}

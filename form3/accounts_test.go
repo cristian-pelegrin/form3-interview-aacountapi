@@ -16,13 +16,13 @@ func TestAccountsService_Create(t *testing.T) {
 		body := `{"data":{"id":"a","organisation_id":"b","type":"accounts","version":0,"attributes":{"account_classification":"Personal"}}}`
 		return mockedResponse(http.StatusCreated, body, nil), nil
 	})
-	client, err := NewRestClient(mockedHttpClient, newRestClientParams{baseUrl: baseFakeUrl})
+	client, err := NewRestClient(mockedHttpClient, NewRestClientParams{BaseUrl: baseFakeUrl})
 	service := NewAccountsService(client)
 
 	account := &Account{
 		ID:             "a",
 		OrganisationID: "b",
-		Type:           "accounts",
+		Type:           AcctTypeAccounts,
 		Version:        0,
 		Attributes: &AccountAttributes{
 			AccountClassification: "Personal",
@@ -37,9 +37,9 @@ func TestAccountsService_Create(t *testing.T) {
 	assert.NotNil(t, newAccount, "NewAccount should be not nil")
 	assert.Equal(t, "a", newAccount.ID, "newAccount.ID incorrect")
 	assert.Equal(t, "b", newAccount.OrganisationID, "newAccount.OrganisationID incorrect")
-	assert.Equal(t, "accounts", newAccount.Type, "newAccount.Type incorrect")
+	assert.Equal(t, AcctTypeAccounts, newAccount.Type, "newAccount.Type incorrect")
 	assert.Equal(t, 0, newAccount.Version, "newAccount.Version incorrect")
-	assert.Equal(t, "Personal", newAccount.Attributes.AccountClassification, "newAccount.Attributes.AccountClassification incorrect")
+	assert.Equal(t, AcctClassificationPersonal, newAccount.Attributes.AccountClassification, "newAccount.Attributes.AccountClassification incorrect")
 }
 
 func TestAccountsService_Get(t *testing.T) {
@@ -50,7 +50,7 @@ func TestAccountsService_Get(t *testing.T) {
 		body := `{"data":{"id":"a1b2c3","organisation_id":"b","type":"accounts","version":1}}`
 		return mockedResponse(http.StatusOK, body, nil), nil
 	})
-	client, err := NewRestClient(mockedHttpClient, newRestClientParams{baseUrl: baseFakeUrl})
+	client, err := NewRestClient(mockedHttpClient, NewRestClientParams{BaseUrl: baseFakeUrl})
 	service := NewAccountsService(client)
 
 	account, resp, err := service.Get(context.Background(), "a1b2c3")
@@ -61,7 +61,7 @@ func TestAccountsService_Get(t *testing.T) {
 	assert.NotNil(t, account, "NewAccount should be not nil")
 	assert.Equal(t, "a1b2c3", account.ID, "newAccount.ID incorrect")
 	assert.Equal(t, "b", account.OrganisationID, "newAccount.OrganisationID incorrect")
-	assert.Equal(t, "accounts", account.Type, "newAccount.Type incorrect")
+	assert.Equal(t, AcctTypeAccounts, account.Type, "newAccount.Type incorrect")
 	assert.Equal(t, 1, account.Version, "newAccount.Version incorrect")
 }
 
@@ -72,7 +72,7 @@ func TestAccountsService_Delete(t *testing.T) {
 
 		return mockedResponse(http.StatusNoContent, "", nil), nil
 	})
-	client, err := NewRestClient(mockedHttpClient, newRestClientParams{baseUrl: baseFakeUrl})
+	client, err := NewRestClient(mockedHttpClient, NewRestClientParams{BaseUrl: baseFakeUrl})
 	service := NewAccountsService(client)
 
 	resp, err := service.Delete(context.Background(), "a1b2c3", 1)
@@ -80,5 +80,5 @@ func TestAccountsService_Delete(t *testing.T) {
 	assert.Nil(t, err, "Error should be nil")
 	assert.NotNil(t, resp, "Response should be not nil")
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode, "Response code incorrect")
-	assert.Nil(t, resp.Body, "Response body should be nil")
+	assert.Equal(t, resp.Body, http.NoBody)
 }
