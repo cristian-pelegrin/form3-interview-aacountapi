@@ -1,7 +1,7 @@
 # Cristian's Solution to Form3 Take Home Exercise
 
 ## Applicant
-Cristian Pelegrín. I'm new with GO =D
+Cristian Pelegrín. **I'm new with GO =D**
 
 ## Instructions
 [Form3 Take Home Exercise](Instructions.md)

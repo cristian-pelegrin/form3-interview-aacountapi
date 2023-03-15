@@ -7,6 +7,7 @@ import (
 
 const accountsBasePath = "organisation/accounts"
 
+// NewAccountsService returns a AccountsService instance.
 func NewAccountsService(client *RestClient) *AccountsService {
 	return &AccountsService{
 		service{
@@ -15,6 +16,7 @@ func NewAccountsService(client *RestClient) *AccountsService {
 	}
 }
 
+// Create creates a new account and returns it.
 func (s *AccountsService) Create(ctx context.Context, data *Account) (*Account, *RestClientResponse, error) {
 	req, err := s.client.PostRequest(accountsBasePath, data)
 	if err != nil {
@@ -30,6 +32,7 @@ func (s *AccountsService) Create(ctx context.Context, data *Account) (*Account, 
 	return account, resp, nil
 }
 
+// Get retrieves an account by its id
 func (s *AccountsService) Get(ctx context.Context, id string) (*Account, *RestClientResponse, error) {
 	path := fmt.Sprintf("%s/%s", accountsBasePath, id)
 
@@ -47,6 +50,7 @@ func (s *AccountsService) Get(ctx context.Context, id string) (*Account, *RestCl
 	return account, resp, nil
 }
 
+// Delete deletes an account by its id and version
 func (s *AccountsService) Delete(ctx context.Context, id string, version int) (*RestClientResponse, error) {
 	url := fmt.Sprintf("%s/%s?version=%d", accountsBasePath, id, version)
 
